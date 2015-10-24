@@ -17,6 +17,7 @@ package com.example.android.sunshine.app;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.format.Time;
@@ -50,7 +51,7 @@ import java.util.List;
  */
 public class ForecastFragment extends Fragment {
 
-    private ArrayAdapter<String> mForecastAdapter;
+    public ArrayAdapter<String> mForecastAdapter;
     private String PostalCode;
 
     public ForecastFragment() {
@@ -93,7 +94,7 @@ public class ForecastFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
+//        // Create some dummy data for the ListView.  Here's a sample weekly forecast
         String[] data = {
                 "Mon 6/23 - Sunny - 31/17",
                 "Tue 6/24 - Foggy - 21/8",
@@ -116,7 +117,6 @@ public class ForecastFragment extends Fragment {
                         weekForecast);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -224,7 +224,6 @@ public class ForecastFragment extends Fragment {
             }
 
             for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
             }
             return resultStrs;
 
@@ -255,9 +254,8 @@ public class ForecastFragment extends Fragment {
                         .appendQueryParameter("mode", "json")
                         .appendQueryParameter("units", "metric")
                         .appendQueryParameter("cnt", "7")
-                        .appendQueryParameter("APPID",BuildConfig.OPEN_WEATHER_MAP_API_KEY);
+                        .appendQueryParameter("APPID", BuildConfig.OPEN_WEATHER_MAP_API_KEY);
                 String myUrl = builder.build().toString();
-                Log.v(LOG_TAG,myUrl);
                 //String baseUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
                 //String apiKey = "&APPID=" + BuildConfig.OPEN_WEATHER_MAP_API_KEY;
                 URL url = new URL(myUrl);
@@ -325,9 +323,16 @@ public class ForecastFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] strings) {
-            super.onPostExecute(strings);
-
-        }
+                protected void onPostExecute(String[] result) {
+                        if (result != null) {
+                            mForecastAdapter.clear();
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                                mForecastAdapter.addAll(result);
+                            }
+//                                for(String dayForecastStr : result) {
+//                                        mForecastAdapter.add(dayForecastStr);
+//                                    }                // New data is back from the server.  Hooray!
+                                    }
+                    }
     }
 }
